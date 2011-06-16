@@ -5,7 +5,7 @@
 #pragma once
 
 #include <vector>
-#include "Vector3D.h"
+#include "cinder/Vector.h"
 #include "Integrator.h"
 #include "Spring.h"
 #include "Attraction.h"
@@ -30,7 +30,7 @@ public:
  
     Integrator* integrator;
   
-    Vector3D gravity;
+    ci::Vec3f gravity;
     float drag;
 
     bool hasDeadParticles;

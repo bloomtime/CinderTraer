@@ -54,7 +54,7 @@ namespace traer { namespace physics {
     
     float Spring::currentLength() const
     {
-        return a->getPosition()->distanceTo( *(b->getPosition()) );
+        return a->getPosition()->distance( *(b->getPosition()) );
     }
     
     float Spring::getRestLength() const
@@ -91,9 +91,12 @@ namespace traer { namespace physics {
     {	
         if ( on && ( a->isFree() || b->isFree() ) )
         {
-            float a2bX = a->getPosition()->x - b->getPosition()->x;
-            float a2bY = a->getPosition()->y - b->getPosition()->y;
-            float a2bZ = a->getPosition()->z - b->getPosition()->z;
+            ci::Vec3f p1 = *(a->getPosition());
+            ci::Vec3f p2 = *(b->getPosition());
+            
+            float a2bX = p1.x - p2.x;
+            float a2bY = p1.y - p2.y;
+            float a2bZ = p1.z - p2.z;
             
             float a2bDistance = sqrt( a2bX*a2bX + a2bY*a2bY + a2bZ*a2bZ );
             
@@ -118,9 +121,12 @@ namespace traer { namespace physics {
             
             // want velocity along line b/w a & b, damping force is proportional to this
             
-            float Va2bX = a->getVelocity()->x - b->getVelocity()->x;
-            float Va2bY = a->getVelocity()->y - b->getVelocity()->y;
-            float Va2bZ = a->getVelocity()->z - b->getVelocity()->z;
+            ci::Vec3f v1 = *(a->getVelocity());
+            ci::Vec3f v2 = *(b->getVelocity());
+            
+            float Va2bX = v1.x - v2.x;
+            float Va2bY = v1.y - v2.y;
+            float Va2bZ = v1.z - v2.z;
                                 
             float dampingForce = -damping * ( a2bX*Va2bX + a2bY*Va2bY + a2bZ*Va2bZ );
             
@@ -134,9 +140,9 @@ namespace traer { namespace physics {
             a2bZ *= r;
             
             if ( a->isFree() )
-                a->getForce()->add( a2bX, a2bY, a2bZ );
+                *(a->getForce()) += ci::Vec3f( a2bX, a2bY, a2bZ );
             if ( b->isFree() )
-                b->getForce()->add( -a2bX, -a2bY, -a2bZ );
+                *(b->getForce()) += ci::Vec3f( -a2bX, -a2bY, -a2bZ );
         }
     }
     

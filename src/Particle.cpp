@@ -5,9 +5,6 @@ namespace traer { namespace physics {
 
     Particle::Particle( const float &m )
     {
-//        position = new Vector3D();
-//        velocity = new Vector3D();
-//        force = new Vector3D();
         mass = m;
         fixed = false;
         age = 0;
@@ -16,13 +13,13 @@ namespace traer { namespace physics {
   
     float Particle::distanceTo( Particle *p ) const
     {
-        return position.distanceTo( *(p->getPosition()) );
+        return position.distance( *(p->getPosition()) );
     }
   
     void Particle::makeFixed()
     {
 	    fixed = true;
-	    velocity.clear();
+	    velocity.set(0,0,0);
     }
   
     bool Particle::isFixed() const
@@ -40,12 +37,12 @@ namespace traer { namespace physics {
         fixed = false;
     }
   
-    Vector3D* Particle::getPosition()
+    ci::Vec3f* Particle::getPosition()
     {
         return &position;
     }
   
-    Vector3D* Particle::getVelocity()
+    ci::Vec3f* Particle::getVelocity()
     {
         return &velocity;
     }
@@ -60,7 +57,7 @@ namespace traer { namespace physics {
         mass = m;
     }
   
-    Vector3D* Particle::getForce()
+    ci::Vec3f* Particle::getForce()
     {
         return &force;
     }
@@ -79,9 +76,9 @@ namespace traer { namespace physics {
     {
         age = 0;
         dead = false;
-        position.clear();
-        velocity.clear();
-        force.clear();
+        position.set(0,0,0);
+        velocity.set(0,0,0);
+        force.set(0,0,0);
         mass = 1.0f;
     }
 

@@ -79,7 +79,7 @@ void RandomArboretumApp::setup()
 
 void RandomArboretumApp::touchesBegan( TouchEvent event )
 {
-    if (event.getTouches.size() > 1) {
+    if (event.getTouches().size() > 1) {
         physics->clear();
     }
     else {

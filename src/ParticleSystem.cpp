@@ -5,7 +5,6 @@
 #include "ParticleSystem.h"
 #include "RungeKuttaIntegrator.h"
 #include "ModifiedEulerIntegrator.h"
-#include "Vector3D.h"
  
 namespace traer { namespace physics {
 
@@ -52,7 +51,7 @@ namespace traer { namespace physics {
     Particle* ParticleSystem::makeParticle( float mass, float x, float y, float z )
     {
         Particle* p = new Particle( mass );
-        p->getPosition()->set( Vector3D(x, y, z) );
+        p->getPosition()->set(x, y, z);
         particles.push_back( p );
         return p;
     }
@@ -99,9 +98,6 @@ namespace traer { namespace physics {
     ParticleSystem::ParticleSystem( float g, float somedrag )
     {
         integrator = new RungeKuttaIntegrator( this );
-//        particles = new ArrayList();
-//        springs = new ArrayList();
-//        attractions = new ArrayList();
         gravity.set( 0, g, 0 );
         drag = somedrag;
         hasDeadParticles = false;
@@ -110,9 +106,6 @@ namespace traer { namespace physics {
     ParticleSystem::ParticleSystem( float gx, float gy, float gz, float somedrag )
     {
         integrator = new RungeKuttaIntegrator( this );
-//        particles = new ArrayList();
-//        springs = new ArrayList();
-//        attractions = new ArrayList();
         gravity.set( gx, gy, gz );
         drag = somedrag;
         hasDeadParticles = false;
@@ -121,9 +114,6 @@ namespace traer { namespace physics {
     ParticleSystem::ParticleSystem()
     {
         integrator = new RungeKuttaIntegrator( this );
-//        particles = new ArrayList();
-//        springs = new ArrayList();
-//        attractions = new ArrayList();
         gravity.set( 0, DEFAULT_GRAVITY, 0 );
         drag = DEFAULT_DRAG;
         hasDeadParticles = false;
@@ -131,19 +121,19 @@ namespace traer { namespace physics {
     
     void ParticleSystem::applyForces()
     {
-        if ( !gravity.isZero() )
+        if ( gravity.length() > 0.0f )
         {
             for ( int i = 0; i < particles.size(); ++i )
             {
                 Particle* p = particles[i];
-                p->getForce()->add( gravity );
+                *(p->getForce()) += gravity;
             }
         }
         
         for ( int i = 0; i < particles.size(); ++i )
         {
             Particle* p = particles[i];
-            p->getForce()->add( p->getVelocity()->x * -drag, p->getVelocity()->y * -drag, p->getVelocity()->z * -drag );
+            *(p->getForce()) += *(p->getVelocity()) * -drag;
         }
         
         for ( int i = 0; i < springs.size(); i++ )
@@ -170,7 +160,7 @@ namespace traer { namespace physics {
         for ( int i = 0; i < particles.size(); ++i )
         {
             Particle* p = particles[i];
-            p->getForce()->clear();
+            p->getForce()->set(0,0,0);
         }
     }
     

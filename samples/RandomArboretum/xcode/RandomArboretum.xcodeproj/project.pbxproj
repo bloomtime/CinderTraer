@@ -26,7 +26,6 @@
 		E219CF2113A9659C006C7F26 /* ParticleSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E219CF1913A9659C006C7F26 /* ParticleSystem.cpp */; };
 		E219CF2213A9659C006C7F26 /* RungeKuttaIntegrator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E219CF1A13A9659C006C7F26 /* RungeKuttaIntegrator.cpp */; };
 		E219CF2313A9659C006C7F26 /* Spring.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E219CF1B13A9659C006C7F26 /* Spring.cpp */; };
-		E219CF2413A9659C006C7F26 /* Vector3D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E219CF1C13A9659C006C7F26 /* Vector3D.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -54,7 +53,6 @@
 		E219CF1013A9659C006C7F26 /* ParticleSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParticleSystem.h; sourceTree = "<group>"; };
 		E219CF1113A9659C006C7F26 /* RungeKuttaIntegrator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RungeKuttaIntegrator.h; sourceTree = "<group>"; };
 		E219CF1213A9659C006C7F26 /* Spring.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Spring.h; sourceTree = "<group>"; };
-		E219CF1313A9659C006C7F26 /* Vector3D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Vector3D.h; sourceTree = "<group>"; };
 		E219CF1513A9659C006C7F26 /* Attraction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Attraction.cpp; sourceTree = "<group>"; };
 		E219CF1613A9659C006C7F26 /* EulerIntegrator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EulerIntegrator.cpp; sourceTree = "<group>"; };
 		E219CF1713A9659C006C7F26 /* ModifiedEulerIntegrator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ModifiedEulerIntegrator.cpp; sourceTree = "<group>"; };
@@ -62,7 +60,6 @@
 		E219CF1913A9659C006C7F26 /* ParticleSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ParticleSystem.cpp; sourceTree = "<group>"; };
 		E219CF1A13A9659C006C7F26 /* RungeKuttaIntegrator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RungeKuttaIntegrator.cpp; sourceTree = "<group>"; };
 		E219CF1B13A9659C006C7F26 /* Spring.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Spring.cpp; sourceTree = "<group>"; };
-		E219CF1C13A9659C006C7F26 /* Vector3D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Vector3D.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -177,7 +174,6 @@
 				E219CF1013A9659C006C7F26 /* ParticleSystem.h */,
 				E219CF1113A9659C006C7F26 /* RungeKuttaIntegrator.h */,
 				E219CF1213A9659C006C7F26 /* Spring.h */,
-				E219CF1313A9659C006C7F26 /* Vector3D.h */,
 			);
 			name = include;
 			path = ../../../include;
@@ -193,7 +189,6 @@
 				E219CF1913A9659C006C7F26 /* ParticleSystem.cpp */,
 				E219CF1A13A9659C006C7F26 /* RungeKuttaIntegrator.cpp */,
 				E219CF1B13A9659C006C7F26 /* Spring.cpp */,
-				E219CF1C13A9659C006C7F26 /* Vector3D.cpp */,
 			);
 			name = src;
 			path = ../../../src;
@@ -273,7 +268,6 @@
 				E219CF2113A9659C006C7F26 /* ParticleSystem.cpp in Sources */,
 				E219CF2213A9659C006C7F26 /* RungeKuttaIntegrator.cpp in Sources */,
 				E219CF2313A9659C006C7F26 /* Spring.cpp in Sources */,
-				E219CF2413A9659C006C7F26 /* Vector3D.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

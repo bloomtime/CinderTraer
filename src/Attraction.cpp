@@ -1,7 +1,8 @@
 // attract positive repel negative
 
-#include "Attraction.h"
 #include <cmath>
+#include "cinder/Vector.h"
+#include "Attraction.h"
 
 namespace traer { namespace physics {
 	
@@ -65,9 +66,11 @@ namespace traer { namespace physics {
 	{
 		if ( on && ( a->isFree() || b->isFree() ) )
 		{
-			float a2bX = a->getPosition()->x - b->getPosition()->x;
-			float a2bY = a->getPosition()->y - b->getPosition()->y;
-			float a2bZ = a->getPosition()->z - b->getPosition()->z;
+            const ci::Vec3f p1 = *(a->getPosition());
+            const ci::Vec3f p2 = *(b->getPosition());
+			float a2bX = p1.x - p2.x;
+			float a2bY = p1.y - p2.y;
+			float a2bZ = p1.z - p2.z;
 
 			float a2bDistanceSquared = a2bX*a2bX + a2bY*a2bY + a2bZ*a2bZ;
 
@@ -93,9 +96,9 @@ namespace traer { namespace physics {
 			// apply
 			
 			if ( a->isFree() )
-				a->getForce()->add( -a2bX, -a2bY, -a2bZ );
+				*(a->getForce()) += ci::Vec3f( -a2bX, -a2bY, -a2bZ );
 			if ( b->isFree() )
-				b->getForce()->add( a2bX, a2bY, a2bZ );
+				*(b->getForce()) += ci::Vec3f( a2bX, a2bY, a2bZ );
 		}
 	}
 

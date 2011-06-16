@@ -1,3 +1,4 @@
+#include "cinder/Vector.h"
 #include "ModifiedEulerIntegrator.h"
 
 namespace traer { namespace physics {
@@ -12,20 +13,22 @@ namespace traer { namespace physics {
 		s->clearForces();
 		s->applyForces();
 		
-		float halftt = 0.5f*t*t;
+		const float halftt = 0.5f*t*t;
 		
 		for ( int i = 0; i < s->numberOfParticles(); i++ )
 		{
 			Particle* p = s->getParticle( i );
 			if ( p->isFree() )
 			{
-				float ax = p->getForce()->x/p->getMass();
-				float ay = p->getForce()->y/p->getMass();
-				float az = p->getForce()->z/p->getMass();
+                const ci::Vec3f force = *(p->getForce());
+                const float mass = p->getMass();
+                const ci::Vec3f a = force / mass;
 				
-				p->getPosition()->add( p->getVelocity()->x/t, p->getVelocity()->y/t, p->getVelocity()->z/t );
-				p->getPosition()->add( ax*halftt, ay*halftt, az*halftt );
-				p->getVelocity()->add( ax/t, ay/t, az/t );
+                ci::Vec3f position = *(p->getPosition());
+                ci::Vec3f velocity = *(p->getVelocity());
+                position += velocity/t;
+                position += a * halftt;
+                velocity += a / t;
 			}
 		}
 	}

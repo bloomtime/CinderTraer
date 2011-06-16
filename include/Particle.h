@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Vector3D.h"
+#include "cinder/Vector.h"
 
 namespace traer { namespace physics {
 
@@ -22,15 +22,15 @@ public:
 
     void makeFree();
 
-    Vector3D* getPosition();
+    ci::Vec3f* getPosition();
       
-    Vector3D* getVelocity();
+    ci::Vec3f* getVelocity();
       
     float getMass() const;
       
     void setMass( const float &m );
       
-    Vector3D* getForce();
+    ci::Vec3f* getForce();
       
     float getAge() const;
 
@@ -38,9 +38,9 @@ public:
 
 protected:
 
-    Vector3D position;
-    Vector3D velocity;
-    Vector3D force;
+    ci::Vec3f position;
+    ci::Vec3f velocity;
+    ci::Vec3f force;
     float mass;
     float age;
     bool dead;
