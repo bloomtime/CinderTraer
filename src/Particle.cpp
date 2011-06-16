@@ -8,6 +8,7 @@ namespace traer { namespace physics {
         mass = m;
         age = 0;
         fixed = false;
+		locked = false;
         position.set(0,0,0);
         velocity.set(0,0,0);
         force.set(0,0,0);
@@ -18,6 +19,7 @@ namespace traer { namespace physics {
         mass = 1.0f;
         age = 0;
         fixed = false;
+		locked = false;
         position.set(0,0,0);
         velocity.set(0,0,0);
         force.set(0,0,0);
