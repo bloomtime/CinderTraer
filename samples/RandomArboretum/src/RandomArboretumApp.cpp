@@ -41,6 +41,8 @@ class RandomArboretumApp : public AppCocoaTouch {
     float scale;
     float centroidX;
     float centroidY;
+    
+    float prevT;
 };
 
 void RandomArboretumApp::setup()
@@ -49,6 +51,8 @@ void RandomArboretumApp::setup()
     centroidX = 0;
     centroidY = 0;    
 
+    prevT = getElapsedSeconds();
+    
     //size( 400, 400 );
     //smooth();
     //strokeWeight( 2 );
@@ -98,8 +102,12 @@ void RandomArboretumApp::draw()
     gl::clear( Color( 1.0f, 1.0f, 1.0f ) );
     gl::setMatricesWindow( getWindowSize() );        
     
+    float t = getElapsedSeconds();
+    float fps = 1.0/(t-prevT);
+    prevT = t;
+    
     //std::stringstream ss;
-    console() << physics->numberOfParticles() << " PARTICLES " << getFrameRate() << " FPS" << std::endl;
+    console() << physics->numberOfParticles() << " PARTICLES " << fps << " FPS" << std::endl;
     //gl::drawString( ss.str(), Vec2f(10, 20), Color( 0, 0, 0 ) );
 
     gl::pushModelView();
@@ -138,8 +146,8 @@ void RandomArboretumApp::drawNetwork()
 void RandomArboretumApp::updateCentroid()
 {
     float xMax = -FLT_MAX, 
-          xMin = FLT_MAX, 
-          yMin = FLT_MAX, 
+          xMin =  FLT_MAX, 
+          yMin =  FLT_MAX, 
           yMax = -FLT_MAX;
     
     for ( int i = 0; i < physics->numberOfParticles(); ++i )
@@ -154,7 +162,7 @@ void RandomArboretumApp::updateCentroid()
     float deltaY = yMax-yMin;
     
     centroidX = xMin + 0.5*deltaX;
-    centroidY = yMin +0.5*deltaY;
+    centroidY = yMin + 0.5*deltaY;
     
     if ( deltaY > deltaX )
         scale = getWindowHeight()/(deltaY+50);
