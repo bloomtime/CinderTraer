@@ -42,6 +42,10 @@ public:
 	
 	bool isOff() const;
 	
+private:
+    // http://en.wikipedia.org/wiki/Fast_inverse_square_root
+    float Q_rsqrt( float number );
+    
 };
 
 } } // namespace traer::physics
