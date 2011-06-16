@@ -41,12 +41,6 @@ public:
 	bool isOn() const;
 	
 	bool isOff() const;
-
-protected:
-	
-	void setA( Particle* p );
-	
-	void setB( Particle* p );
 	
 };
 

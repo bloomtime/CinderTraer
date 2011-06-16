@@ -10,6 +10,7 @@
 #include "cinder/Rand.h"
 #include "cinder/CinderMath.h"
 #include "ParticleSystem.h"
+#include "ModifiedEulerIntegrator.h"
 #include "Particle.h"
 #include "Spring.h"
 
@@ -66,7 +67,7 @@ void RandomArboretumApp::setup()
     
     // Try this to see how Euler is faster, but borderline unstable.
     // 500 particles = 24 fps on my machine
-    //physics.setIntegrator( ParticleSystem.MODIFIED_EULER ); 
+    // physics->setIntegrator( new ModifiedEulerIntegrator(physics) ); 
     
     // Now try this to see make it more damped, but stable.
     //physics.setDrag( 0.2 );
@@ -80,7 +81,7 @@ void RandomArboretumApp::setup()
 void RandomArboretumApp::touchesBegan( TouchEvent event )
 {
     if (event.getTouches().size() > 1) {
-        physics->clear();
+        initialize();
     }
     else {
         addNode();
@@ -94,7 +95,7 @@ void RandomArboretumApp::touchesMoved( TouchEvent event )
 
 void RandomArboretumApp::update()
 {
-    physics->tick(); 
+    physics->tick(1.0f); 
     if ( physics->numberOfParticles() > 1 ) {
         updateCentroid();
     }
@@ -131,7 +132,7 @@ void RandomArboretumApp::drawNetwork()
     for ( int i = 0; i < physics->numberOfParticles(); ++i )
     {
         Particle* v = physics->getParticle( i );
-        gl::drawSolidCircle( Vec2f(v->getPosition()->x, v->getPosition()->y), NODE_SIZE/2.0f );
+        gl::drawSolidCircle( v->position.xy(), NODE_SIZE/2.0f );
     }
     
     // draw edges 
@@ -141,7 +142,7 @@ void RandomArboretumApp::drawNetwork()
         Spring* e = physics->getSpring( i );
         Particle* a = e->getOneEnd();
         Particle* b = e->getTheOtherEnd();
-        gl::drawLine( Vec2f(a->getPosition()->x, a->getPosition()->y), Vec2f(b->getPosition()->x, b->getPosition()->y) );                 
+        gl::drawLine( a->position.xy(), b->position.xy() );                 
     }
 }
 
@@ -156,10 +157,10 @@ void RandomArboretumApp::updateCentroid()
     for ( int i = 0; i < physics->numberOfParticles(); ++i )
     {
         Particle* p = physics->getParticle( i );
-        xMax = math<float>::max( xMax, p->getPosition()->x );
-        xMin = math<float>::min( xMin, p->getPosition()->x );
-        yMin = math<float>::min( yMin, p->getPosition()->y );
-        yMax = math<float>::max( yMax, p->getPosition()->y );
+        xMax = math<float>::max( xMax, p->position.x );
+        xMin = math<float>::min( xMin, p->position.x );
+        yMin = math<float>::min( yMin, p->position.y );
+        yMax = math<float>::max( yMax, p->position.y );
     }
     float deltaX = xMax-xMin;
     float deltaY = yMax-yMin;
@@ -203,7 +204,7 @@ void RandomArboretumApp::addNode()
     addSpacersToNode( p, q );
     makeEdgeBetween( p, q );
     Vec2f jiggle = Rand::randVec2f();
-    p->getPosition()->set( q->getPosition()->x + jiggle.x, q->getPosition()->y + jiggle.y, 0 );
+    p->position.set( q->position.x + jiggle.x, q->position.y + jiggle.y, 0 );
 }
 
 CINDER_APP_COCOA_TOUCH( RandomArboretumApp, RendererGl )

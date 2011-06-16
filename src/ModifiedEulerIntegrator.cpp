@@ -18,17 +18,12 @@ namespace traer { namespace physics {
 		for ( int i = 0; i < s->numberOfParticles(); i++ )
 		{
 			Particle* p = s->getParticle( i );
-			if ( p->isFree() )
+			if ( !p->fixed )
 			{
-                const ci::Vec3f force = *(p->getForce());
-                const float mass = p->getMass();
-                const ci::Vec3f a = force / mass;
-				
-                ci::Vec3f position = *(p->getPosition());
-                ci::Vec3f velocity = *(p->getVelocity());
-                position += velocity/t;
-                position += a * halftt;
-                velocity += a / t;
+                const ci::Vec3f a = p->force / p->mass;				
+                p->position += p->velocity/t;
+                p->position += a * halftt;
+                p->velocity += a / t;
 			}
 		}
 	}

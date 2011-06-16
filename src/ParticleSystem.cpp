@@ -4,22 +4,13 @@
  
 #include "ParticleSystem.h"
 #include "RungeKuttaIntegrator.h"
-#include "ModifiedEulerIntegrator.h"
  
 namespace traer { namespace physics {
 
-    // FIXME C++: set with a pointer and delete the old one
-    void ParticleSystem::setIntegrator( int id )
+    void ParticleSystem::setIntegrator( Integrator *i )
     {
-        switch ( id )
-        {
-            case RUNGE_KUTTA:
-                integrator = new RungeKuttaIntegrator( this );
-                break;
-            case MODIFIED_EULER:
-                integrator = new ModifiedEulerIntegrator( this );
-                break;
-        }
+        delete integrator;
+        integrator = i;
     }
     
     void ParticleSystem::setGravity( float x, float y, float z )
@@ -51,7 +42,7 @@ namespace traer { namespace physics {
     Particle* ParticleSystem::makeParticle( float mass, float x, float y, float z )
     {
         Particle* p = new Particle( mass );
-        p->getPosition()->set(x, y, z);
+        p->position.set(x, y, z);
         particles.push_back( p );
         return p;
     }
@@ -100,7 +91,6 @@ namespace traer { namespace physics {
         integrator = new RungeKuttaIntegrator( this );
         gravity.set( 0, g, 0 );
         drag = somedrag;
-        hasDeadParticles = false;
     }
     
     ParticleSystem::ParticleSystem( float gx, float gy, float gz, float somedrag )
@@ -108,7 +98,6 @@ namespace traer { namespace physics {
         integrator = new RungeKuttaIntegrator( this );
         gravity.set( gx, gy, gz );
         drag = somedrag;
-        hasDeadParticles = false;
     }
     
     ParticleSystem::ParticleSystem()
@@ -116,7 +105,6 @@ namespace traer { namespace physics {
         integrator = new RungeKuttaIntegrator( this );
         gravity.set( 0, DEFAULT_GRAVITY, 0 );
         drag = DEFAULT_DRAG;
-        hasDeadParticles = false;
     }
     
     void ParticleSystem::applyForces()
@@ -126,14 +114,14 @@ namespace traer { namespace physics {
             for ( int i = 0; i < particles.size(); ++i )
             {
                 Particle* p = particles[i];
-                *(p->getForce()) += gravity;
+                p->force += gravity;
             }
         }
         
         for ( int i = 0; i < particles.size(); ++i )
         {
             Particle* p = particles[i];
-            *(p->getForce()) += *(p->getVelocity()) * -drag;
+            p->force -= p->velocity * drag;
         }
         
         for ( int i = 0; i < springs.size(); i++ )
@@ -160,7 +148,7 @@ namespace traer { namespace physics {
         for ( int i = 0; i < particles.size(); ++i )
         {
             Particle* p = particles[i];
-            p->getForce()->set(0,0,0);
+            p->force.set(0,0,0);
         }
     }
     
@@ -209,45 +197,56 @@ namespace traer { namespace physics {
         return customForces[i];
     }
     
-    Force* ParticleSystem::removeCustomForce( int i )
+    void ParticleSystem::removeCustomForce( int i )
     {
         Force* erased = customForces[i];
         customForces.erase( customForces.begin() + i );
-        return erased;
+        delete erased;
     }
     
     void ParticleSystem::removeParticle( Particle* p )
     {
         particles.erase( std::find(particles.begin(), particles.end(), p) );
+        delete p;
     }
+
+    void ParticleSystem::removeParticle( int i )
+    {
+        Particle* erased = particles[i];
+        particles.erase( particles.begin() + i );
+        delete erased;
+    }    
     
-    Spring* ParticleSystem::removeSpring( int i )
+    void ParticleSystem::removeSpring( int i )
     {
         Spring* erased = springs[i];
         springs.erase( springs.begin() + i );
-        return erased;
+        delete erased;
     }
     
-    Attraction* ParticleSystem::removeAttraction( int i  )
+    void ParticleSystem::removeAttraction( int i  )
     {
         Attraction* erased = attractions[i];
         attractions.erase( attractions.begin() + i );
-        return erased;
+        delete erased;
     }
     
     void ParticleSystem::removeAttraction( Attraction* s )
     {
         attractions.erase( std::find(attractions.begin(), attractions.end(), s) );
+        delete s;
     }
     
     void ParticleSystem::removeSpring( Spring* a )
     {
         springs.erase( std::find(springs.begin(), springs.end(), a) );
+        delete a;
     }
     
     void ParticleSystem::removeCustomForce( Force* f )
     {
         customForces.erase( std::find(customForces.begin(), customForces.end(), f) );
+        delete f;
     }
 
 } } // namespace traer::physics

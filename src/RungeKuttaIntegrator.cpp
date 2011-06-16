@@ -33,13 +33,13 @@ namespace traer { namespace physics {
 		for ( int i = 0; i < s->particles.size(); ++i )
 		{
 			Particle* p = s->particles[i];
-			if ( p->isFree() )
+			if ( !p->fixed )
 			{		
-				originalPositions[i].set( *(p->getPosition()) );
-				originalVelocities[i].set( *(p->getVelocity()) );
+				originalPositions[i].set( p->position );
+				originalVelocities[i].set( p->velocity );
 			}
 			
-			p->getForce()->set(0,0,0);	// and clear the forces
+			p->force.set(0,0,0);	// and clear the forces
 		}
 		
 		////////////////////////////////////////////////////////
@@ -51,13 +51,13 @@ namespace traer { namespace physics {
 		for ( int i = 0; i < s->particles.size(); ++i )
 		{
 			Particle* p = s->particles[i];
-			if ( p->isFree() )
+			if ( !p->fixed )
 			{
-				k1Forces[i].set( *(p->getForce()) );
-				k1Velocities[i].set( *(p->getVelocity()) );                
+				k1Forces[i].set( p->force );
+				k1Velocities[i].set( p->velocity );                
 			}
 			
-			p->getForce()->set(0,0,0);	// and clear the forces
+			p->force.set(0,0,0);	// and clear the forces
 		}
 		
 		////////////////////////////////////////////////////////////////
@@ -66,21 +66,17 @@ namespace traer { namespace physics {
 		for ( int i = 0; i < s->particles.size(); ++i )
 		{
 			Particle* p = s->particles[i];
-			if ( p->isFree() )
+			if ( !p->fixed )
 			{
 				ci::Vec3f originalPosition = originalPositions[i];
 				ci::Vec3f k1Velocity = k1Velocities[i];
 				
-                ci::Vec3f position = *(p->getPosition());
-                
-                position.set( originalPosition + (k1Velocity * (0.5f * deltaT)) );
+                p->position.set( originalPosition + (k1Velocity * (0.5f * deltaT)) );
 				
 				ci::Vec3f originalVelocity = originalVelocities[i];
 				ci::Vec3f k1Force = k1Forces[i];
 
-                ci::Vec3f velocity = *(p->getVelocity());
-
-				velocity.set( originalVelocity + k1Force * 0.5f * deltaT / p->getMass() );
+				p->velocity.set( originalVelocity + k1Force * 0.5f * deltaT / p->mass );
 			}
 		}
 		
@@ -90,13 +86,13 @@ namespace traer { namespace physics {
 		for ( int i = 0; i < s->particles.size(); ++i )
 		{
 			Particle* p = s->particles[i];
-			if ( p->isFree() )
+			if ( !p->fixed )
 			{
-				k2Forces[i].set( *(p->getForce()) );
-				k2Velocities[i].set( *(p->getVelocity()) );                
+				k2Forces[i].set( p->force );
+				k2Velocities[i].set( p->velocity );                
 			}
 			
-			p->getForce()->set(0,0,0);	// and clear the forces now that we are done with them
+			p->force.set(0,0,0);	// and clear the forces now that we are done with them
 		}
 		
 		
@@ -106,19 +102,17 @@ namespace traer { namespace physics {
 		for ( int i = 0; i < s->particles.size(); ++i )
 		{
 			Particle* p = s->particles[i];
-			if ( p->isFree() )
+			if ( !p->fixed )
 			{
                 ci::Vec3f originalPosition = originalPositions[i];
                 ci::Vec3f k2Velocity = k2Velocities[i];
 				
-                ci::Vec3f position = *(p->getPosition());
-                position.set( originalPosition + k2Velocity * 0.5f * deltaT );
+                p->position.set( originalPosition + k2Velocity * 0.5f * deltaT );
 				
                 ci::Vec3f originalVelocity = originalVelocities[i];
                 ci::Vec3f k2Force = k2Forces[i];
 
-                ci::Vec3f velocity = *(p->getVelocity());
-                velocity.set( originalVelocity + k2Force * 0.5f * deltaT / p->getMass() );
+                p->velocity.set( originalVelocity + k2Force * 0.5f * deltaT / p->mass );
 			}
 		}
         
@@ -128,13 +122,13 @@ namespace traer { namespace physics {
 		for ( int i = 0; i < s->particles.size(); ++i )
 		{
 			Particle* p = s->particles[i];
-			if ( p->isFree() )
+			if ( !p->fixed )
 			{
-				k3Forces[i].set( *(p->getForce()) );
-				k3Velocities[i].set( *(p->getVelocity()) );                
+				k3Forces[i].set( p->force );
+				k3Velocities[i].set( p->velocity );                
 			}
 			
-			p->getForce()->set(0,0,0);	// and clear the forces now that we are done with them
+			p->force.set(0,0,0);	// and clear the forces now that we are done with them
 		}
 		
 		
@@ -144,19 +138,17 @@ namespace traer { namespace physics {
 		for ( int i = 0; i < s->particles.size(); ++i )
 		{
 			Particle* p = s->particles[i];
-			if ( p->isFree() )
+			if ( !p->fixed )
 			{
                 ci::Vec3f originalPosition = originalPositions[i];
 				ci::Vec3f k3Velocity = k3Velocities[i];
 				
-                ci::Vec3f position = *(p->getPosition());
-				position.set( originalPosition + k3Velocity * deltaT);
+				p->position.set( originalPosition + k3Velocity * deltaT);
 				
 				ci::Vec3f originalVelocity = originalVelocities[i];
 				ci::Vec3f k3Force = k3Forces[i];
 
-                ci::Vec3f velocity = *(p->getVelocity());
-				velocity.set( originalVelocity + k3Force * deltaT / p->getMass());
+				p->velocity.set( originalVelocity + k3Force * deltaT / p->mass );
 			}
 		}
 		
@@ -166,10 +158,10 @@ namespace traer { namespace physics {
 		for ( int i = 0; i < s->particles.size(); ++i )
 		{
 			Particle* p = s->particles[i];
-			if ( p->isFree() )
+			if ( !p->fixed )
 			{
-				k4Forces[i].set( *(p->getForce()) );
-				k4Velocities[i].set( *(p->getVelocity()) );                
+				k4Forces[i].set( p->force );
+				k4Velocities[i].set( p->velocity );                
 			}			
 		}
 		
@@ -180,8 +172,8 @@ namespace traer { namespace physics {
 		for ( int i = 0; i < s->particles.size(); ++i )
 		{
 			Particle* p = s->particles[i];
-			p->setAge(p->getAge() + deltaT);
-			if ( p->isFree() )
+            p->age += deltaT;
+			if ( !p->fixed )
 			{
 				// update position
 				
@@ -191,8 +183,7 @@ namespace traer { namespace physics {
 				ci::Vec3f k3Velocity = k3Velocities[i];
 				ci::Vec3f k4Velocity = k4Velocities[i];
 				
-                ci::Vec3f position = *(p->getPosition());
-				position.set( originalPosition + deltaT / 6.0f * ( k1Velocity + 2.0f*k2Velocity + 2.0f*k3Velocity + k4Velocity ) );
+				p->position.set( originalPosition + deltaT / 6.0f * ( k1Velocity + 2.0f*k2Velocity + 2.0f*k3Velocity + k4Velocity ) );
 				
 				// update velocity
 				
@@ -202,8 +193,7 @@ namespace traer { namespace physics {
 				ci::Vec3f k3Force = k3Forces[i];
 				ci::Vec3f k4Force = k4Forces[i];
 				
-                ci::Vec3f velocity = *(p->getVelocity());
-                velocity.set( originalVelocity + deltaT / ( 6.0f * p->getMass() ) * ( k1Force + 2.0f*k2Force + 2.0f*k3Force + k4Force ) );
+                p->velocity.set( originalVelocity + deltaT / ( 6.0f * p->mass ) * ( k1Force + 2.0f*k2Force + 2.0f*k3Force + k4Force ) );
 			}
 		}
 	}
