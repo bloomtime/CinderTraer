@@ -5,7 +5,7 @@ java
 *.mode2v3
 *.pbxuser
 *.user
-xcuserdata
+xcuserdata/
 .DS_Store
 
 build
