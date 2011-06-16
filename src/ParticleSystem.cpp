@@ -78,10 +78,22 @@ namespace traer { namespace physics {
     
     void ParticleSystem::clear()
     {
-        // FIXME C++: delete everything, we own it!
+        for (int i = 0; i < particles.size(); i++) {
+            delete particles[i];
+        }
+        for (int i = 0; i < springs.size(); i++) {
+            delete springs[i];
+        }
+        for (int i = 0; i < attractions.size(); i++) {
+            delete attractions[i];
+        }
+        for (int i = 0; i < customForces.size(); i++) {
+            delete customForces[i];
+        }
         particles.clear();
         springs.clear();
         attractions.clear();
+        customForces.clear();
     }
     
     ParticleSystem::ParticleSystem( float g, float somedrag )

@@ -79,13 +79,16 @@ void RandomArboretumApp::setup()
 
 void RandomArboretumApp::touchesBegan( TouchEvent event )
 {
-    console() << "touchesBegan" << std::endl;
-    addNode();
+    if (event.getTouches.size() > 1) {
+        physics->clear();
+    }
+    else {
+        addNode();
+    }
 }
 
 void RandomArboretumApp::touchesMoved( TouchEvent event )
 {
-    console() << "touchesMoved" << std::endl;
     addNode();
 }
 
