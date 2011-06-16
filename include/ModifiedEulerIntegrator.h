@@ -9,11 +9,11 @@ class ModifiedEulerIntegrator : public Integrator
 {
 public:
 
-	ParticleSystem s;
+	ParticleSystem* s;
 	
-	ModifiedEulerIntegrator( ParticleSystem s );
+	ModifiedEulerIntegrator( ParticleSystem* s );
 	
-	void step( float t );
+	void step( const float &t );
 
 };
 

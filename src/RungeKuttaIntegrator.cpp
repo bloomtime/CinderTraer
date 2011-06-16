@@ -2,225 +2,229 @@
 
 namespace traer { namespace physics {
 
-	RungeKuttaIntegrator::RungeKuttaIntegrator( ParticleSystem s )
+	RungeKuttaIntegrator::RungeKuttaIntegrator( ParticleSystem* system )
 	{
-		this.s = s;
+		s = system;
 		
-		originalPositions = new ArrayList();
-		originalVelocities = new ArrayList();
-		k1Forces = new ArrayList();
-		k1Velocities = new ArrayList();
-		k2Forces = new ArrayList();
-		k2Velocities = new ArrayList();
-		k3Forces = new ArrayList();
-		k3Velocities = new ArrayList();
-		k4Forces = new ArrayList();
-		k4Velocities = new ArrayList();
+//		originalPositions = new ArrayList();
+//		originalVelocities = new ArrayList();
+//		k1Forces = new ArrayList();
+//		k1Velocities = new ArrayList();
+//		k2Forces = new ArrayList();
+//		k2Velocities = new ArrayList();
+//		k3Forces = new ArrayList();
+//		k3Velocities = new ArrayList();
+//		k4Forces = new ArrayList();
+//		k4Velocities = new ArrayList();
 	}
 	
 	void RungeKuttaIntegrator::allocateParticles()
 	{
-		while ( s.particles.size() > originalPositions.size() )
+		while ( s->particles.size() > originalPositions.size() )
 		{
-			originalPositions.add( new Vector3D() );
-			originalVelocities.add( new Vector3D() );
-			k1Forces.add( new Vector3D() );
-			k1Velocities.add( new Vector3D() );
-			k2Forces.add( new Vector3D() );
-			k2Velocities.add( new Vector3D() );
-			k3Forces.add( new Vector3D() );
-			k3Velocities.add( new Vector3D() );
-			k4Forces.add( new Vector3D() );
-			k4Velocities.add( new Vector3D() );
+			originalPositions.push_back( Vector3D() );
+			originalVelocities.push_back( Vector3D() );
+			k1Forces.push_back( Vector3D() );
+			k1Velocities.push_back( Vector3D() );
+			k2Forces.push_back( Vector3D() );
+			k2Velocities.push_back( Vector3D() );
+			k3Forces.push_back( Vector3D() );
+			k3Velocities.push_back( Vector3D() );
+			k4Forces.push_back( Vector3D() );
+			k4Velocities.push_back( Vector3D() );
 		}
 	}
 	
-	void RungeKuttaIntegrator::step( float deltaT )
+	void RungeKuttaIntegrator::step( const float &deltaT )
 	{	
 		allocateParticles();
 		/////////////////////////////////////////////////////////
 		// save original position and velocities
 		
-		for ( int i = 0; i < s.particles.size(); ++i )
+		for ( int i = 0; i < s->particles.size(); ++i )
 		{
-			Particle p = (Particle)s.particles.get( i );
-			if ( p.isFree() )
+			Particle* p = s->particles[i];
+			if ( p->isFree() )
 			{		
-				((Vector3D)originalPositions.get( i )).set( p.position );
-				((Vector3D)originalVelocities.get( i )).set( p.velocity );
+				originalPositions[i].set( *(p->getPosition()) );
+				originalVelocities[i].set( *(p->getVelocity()) );
 			}
 			
-			p.force.clear();	// and clear the forces
+			p->getForce()->clear();	// and clear the forces
 		}
 		
 		////////////////////////////////////////////////////////
 		// get all the k1 values
 		
-		s.applyForces();
+		s->applyForces();
 		
 		// save the intermediate forces
-		for ( int i = 0; i < s.particles.size(); ++i )
+		for ( int i = 0; i < s->particles.size(); ++i )
 		{
-			Particle p = (Particle)s.particles.get( i );
-			if ( p.isFree() )
+			Particle* p = s->particles[i];
+			if ( p->isFree() )
 			{
-				((Vector3D)k1Forces.get( i )).set( p.force );
-				((Vector3D)k1Velocities.get( i )).set( p.velocity );
+				k1Forces[i].set( *(p->getForce()) );
+				k1Velocities[i].set( *(p->getVelocity()) );                
 			}
 			
-			p.force.clear();
+			p->getForce()->clear();	// and clear the forces
 		}
 		
 		////////////////////////////////////////////////////////////////
 		// get k2 values
 		
-		for ( int i = 0; i < s.particles.size(); ++i )
+		for ( int i = 0; i < s->particles.size(); ++i )
 		{
-			Particle p = (Particle)s.particles.get( i );
-			if ( p.isFree() )
+			Particle* p = s->particles[i];
+			if ( p->isFree() )
 			{
-				Vector3D originalPosition = (Vector3D)originalPositions.get( i );
-				Vector3D k1Velocity = (Vector3D)k1Velocities.get( i );
+				Vector3D originalPosition = originalPositions[i];
+				Vector3D k1Velocity = k1Velocities[i];
 				
-				p.position.x = originalPosition.x + k1Velocity.x * 0.5f * deltaT;
-				p.position.y = originalPosition.y + k1Velocity.y * 0.5f * deltaT;
-				p.position.z = originalPosition.z + k1Velocity.z * 0.5f * deltaT;
+				p->getPosition()->set( originalPosition.x + k1Velocity.x * 0.5f * deltaT,
+                                       originalPosition.y + k1Velocity.y * 0.5f * deltaT,
+                                       originalPosition.z + k1Velocity.z * 0.5f * deltaT );
 				
-				Vector3D originalVelocity = (Vector3D)originalVelocities.get( i );
-				Vector3D k1Force = (Vector3D)k1Forces.get( i );
+				Vector3D originalVelocity = originalVelocities[i];
+				Vector3D k1Force = k1Forces[i];
 				
-				p.velocity.x = originalVelocity.x + k1Force.x * 0.5f * deltaT / p.mass;
-				p.velocity.y = originalVelocity.y + k1Force.y * 0.5f * deltaT / p.mass;
-				p.velocity.z = originalVelocity.z + k1Force.z * 0.5f * deltaT / p.mass;
+				p->getVelocity()->set( originalVelocity.x + k1Force.x * 0.5f * deltaT / p->getMass(),
+                                       originalVelocity.y + k1Force.y * 0.5f * deltaT / p->getMass(),
+                                       originalVelocity.z + k1Force.z * 0.5f * deltaT / p->getMass() );
 			}
 		}
 		
-		s.applyForces();
+		s->applyForces();
 
 		// save the intermediate forces
-		for ( int i = 0; i < s.particles.size(); ++i )
+		for ( int i = 0; i < s->particles.size(); ++i )
 		{
-			Particle p = (Particle)s.particles.get( i );
-			if ( p.isFree() )
+			Particle* p = s->particles[i];
+			if ( p->isFree() )
 			{
-				((Vector3D)k2Forces.get( i )).set( p.force );
-				((Vector3D)k2Velocities.get( i )).set( p.velocity );
+				k2Forces[i].set( *(p->getForce()) );
+				k2Velocities[i].set( *(p->getVelocity()) );                
 			}
 			
-			p.force.clear();	// and clear the forces now that we are done with them
+            p->getForce()->clear();	// and clear the forces now that we are done with them
 		}
 		
 		
 		/////////////////////////////////////////////////////
 		// get k3 values
 		
-		for ( int i = 0; i < s.particles.size(); ++i )
+		for ( int i = 0; i < s->particles.size(); ++i )
 		{
-			Particle p = (Particle)s.particles.get( i );
-			if ( p.isFree() )
+			Particle* p = s->particles[i];
+			if ( p->isFree() )
 			{
-				Vector3D originalPosition = (Vector3D)originalPositions.get( i );
-				Vector3D k2Velocity = (Vector3D)k2Velocities.get( i );
+				Vector3D originalPosition = originalPositions[i];
+				Vector3D k2Velocity = k2Velocities[i];
 				
-				p.position.x = originalPosition.x + k2Velocity.x * 0.5f * deltaT;
-				p.position.y = originalPosition.y + k2Velocity.y * 0.5f * deltaT;
-				p.position.z = originalPosition.z + k2Velocity.z * 0.5f * deltaT;
+				p->getPosition()->set( originalPosition.x + k2Velocity.x * 0.5f * deltaT,
+                                      originalPosition.y + k2Velocity.y * 0.5f * deltaT,
+                                      originalPosition.z + k2Velocity.z * 0.5f * deltaT );
 				
-				Vector3D originalVelocity = (Vector3D)originalVelocities.get( i );
-				Vector3D k2Force = (Vector3D)k2Forces.get( i );
+				Vector3D originalVelocity = originalVelocities[i];
+				Vector3D k2Force = k2Forces[i];
 				
-				p.velocity.x = originalVelocity.x + k2Force.x * 0.5f * deltaT / p.mass;
-				p.velocity.y = originalVelocity.y + k2Force.y * 0.5f * deltaT / p.mass;
-				p.velocity.z = originalVelocity.z + k2Force.z * 0.5f * deltaT / p.mass;
+				p->getVelocity()->set( originalVelocity.x + k2Force.x * 0.5f * deltaT / p->getMass(),
+                                      originalVelocity.y + k2Force.y * 0.5f * deltaT / p->getMass(),
+                                      originalVelocity.z + k2Force.z * 0.5f * deltaT / p->getMass() );
 			}
 		}
-		
-		s.applyForces();
+        
+		s->applyForces();
 		
 		// save the intermediate forces
-		for ( int i = 0; i < s.particles.size(); ++i )
+		for ( int i = 0; i < s->particles.size(); ++i )
 		{
-			Particle p = (Particle)s.particles.get( i );
-			if ( p.isFree() )
+			Particle* p = s->particles[i];
+			if ( p->isFree() )
 			{
-				((Vector3D)k3Forces.get( i )).set( p.force );
-				((Vector3D)k3Velocities.get( i )).set( p.velocity );
+				k3Forces[i].set( *(p->getForce()) );
+				k3Velocities[i].set( *(p->getVelocity()) );                
 			}
 			
-			p.force.clear();	// and clear the forces now that we are done with them
+            p->getForce()->clear();	// and clear the forces now that we are done with them
 		}
 		
 		
 		//////////////////////////////////////////////////
 		// get k4 values
 		
-		for ( int i = 0; i < s.particles.size(); ++i )
+		for ( int i = 0; i < s->particles.size(); ++i )
 		{
-			Particle p = (Particle)s.particles.get( i );
-			if ( p.isFree() )
+			Particle* p = s->particles[i];
+			if ( p->isFree() )
 			{
-				Vector3D originalPosition = (Vector3D)originalPositions.get( i );
-				Vector3D k3Velocity = (Vector3D)k3Velocities.get( i );
+				Vector3D originalPosition = originalPositions[i];
+				Vector3D k3Velocity = k3Velocities[i];
 				
-				p.position.x = originalPosition.x + k3Velocity.x * deltaT;
-				p.position.y = originalPosition.y + k3Velocity.y * deltaT;
-				p.position.z = originalPosition.z + k3Velocity.z * deltaT;
+				p->getPosition()->set( originalPosition.x + k3Velocity.x * deltaT,
+                                      originalPosition.y + k3Velocity.y * deltaT,
+                                      originalPosition.z + k3Velocity.z * deltaT );
 				
-				Vector3D originalVelocity = (Vector3D)originalVelocities.get( i );
-				Vector3D k3Force = (Vector3D)k3Forces.get( i );
+				Vector3D originalVelocity = originalVelocities[i];
+				Vector3D k3Force = k3Forces[i];
 				
-				p.velocity.x = originalVelocity.x + k3Force.x * deltaT / p.mass;
-				p.velocity.y = originalVelocity.y + k3Force.y * deltaT / p.mass;
-				p.velocity.z = originalVelocity.z + k3Force.z * deltaT / p.mass;
+				p->getVelocity()->set( originalVelocity.x + k3Force.x * deltaT / p->getMass(),
+                                      originalVelocity.y + k3Force.y * deltaT / p->getMass(),
+                                      originalVelocity.z + k3Force.z * deltaT / p->getMass() );
+			}
+		}
+		
+		s->applyForces();
 
-			}
-		}
-		
-		s.applyForces();
-		
 		// save the intermediate forces
-		for ( int i = 0; i < s.particles.size(); ++i )
+		for ( int i = 0; i < s->particles.size(); ++i )
 		{
-			Particle p = (Particle)s.particles.get( i );
-			if ( p.isFree() )
+			Particle* p = s->particles[i];
+			if ( p->isFree() )
 			{
-				((Vector3D)k4Forces.get( i )).set( p.force );
-				((Vector3D)k4Velocities.get( i )).set( p.velocity );
-			}
+				k4Forces[i].set( *(p->getForce()) );
+				k4Velocities[i].set( *(p->getVelocity()) );                
+			}			
 		}
+		
 		
 		/////////////////////////////////////////////////////////////
 		// put them all together and what do you get?
 		
-		for ( int i = 0; i < s.particles.size(); ++i )
+		for ( int i = 0; i < s->particles.size(); ++i )
 		{
-			Particle p = (Particle)s.particles.get( i );
-			p.age += deltaT;
-			if ( p.isFree() )
+			Particle* p = s->particles[i];
+			p->setAge(p->getAge() + deltaT);
+			if ( p->isFree() )
 			{
 				// update position
 				
-				Vector3D originalPosition = (Vector3D)originalPositions.get( i );
-				Vector3D k1Velocity = (Vector3D)k1Velocities.get( i );
-				Vector3D k2Velocity = (Vector3D)k2Velocities.get( i );
-				Vector3D k3Velocity = (Vector3D)k3Velocities.get( i );
-				Vector3D k4Velocity = (Vector3D)k4Velocities.get( i );
+				Vector3D originalPosition = originalPositions[i];
+				Vector3D k1Velocity = k1Velocities[i];
+				Vector3D k2Velocity = k2Velocities[i];
+				Vector3D k3Velocity = k3Velocities[i];
+				Vector3D k4Velocity = k4Velocities[i];
 				
-				p.position.x = originalPosition.x + deltaT / 6.0f * ( k1Velocity.x + 2.0f*k2Velocity.x + 2.0f*k3Velocity.x + k4Velocity.x );
-				p.position.y = originalPosition.y + deltaT / 6.0f * ( k1Velocity.y + 2.0f*k2Velocity.y + 2.0f*k3Velocity.y + k4Velocity.y );
-				p.position.z = originalPosition.z + deltaT / 6.0f * ( k1Velocity.z + 2.0f*k2Velocity.z + 2.0f*k3Velocity.z + k4Velocity.z );
+				p->getPosition()->set( 
+                    originalPosition.x + deltaT / 6.0f * ( k1Velocity.x + 2.0f*k2Velocity.x + 2.0f*k3Velocity.x + k4Velocity.x ),
+                    originalPosition.y + deltaT / 6.0f * ( k1Velocity.y + 2.0f*k2Velocity.y + 2.0f*k3Velocity.y + k4Velocity.y ),
+                    originalPosition.z + deltaT / 6.0f * ( k1Velocity.z + 2.0f*k2Velocity.z + 2.0f*k3Velocity.z + k4Velocity.z ) 
+                );
 				
 				// update velocity
 				
-				Vector3D originalVelocity = (Vector3D)originalVelocities.get( i );
-				Vector3D k1Force = (Vector3D)k1Forces.get( i );
-				Vector3D k2Force = (Vector3D)k2Forces.get( i );
-				Vector3D k3Force = (Vector3D)k3Forces.get( i );
-				Vector3D k4Force = (Vector3D)k4Forces.get( i );
+				Vector3D originalVelocity = originalVelocities[i];
+				Vector3D k1Force = k1Forces[i];
+				Vector3D k2Force = k2Forces[i];
+				Vector3D k3Force = k3Forces[i];
+				Vector3D k4Force = k4Forces[i];
 				
-				p.velocity.x = originalVelocity.x + deltaT / ( 6.0f * p.mass ) * ( k1Force.x + 2.0f*k2Force.x + 2.0f*k3Force.x + k4Force.x );
-				p.velocity.y = originalVelocity.y + deltaT / ( 6.0f * p.mass ) * ( k1Force.y + 2.0f*k2Force.y + 2.0f*k3Force.y + k4Force.y );
-				p.velocity.z = originalVelocity.z + deltaT / ( 6.0f * p.mass ) * ( k1Force.z + 2.0f*k2Force.z + 2.0f*k3Force.z + k4Force.z );
+                p->getVelocity()->set(
+                    originalVelocity.x + deltaT / ( 6.0f * p->getMass() ) * ( k1Force.x + 2.0f*k2Force.x + 2.0f*k3Force.x + k4Force.x ),
+                    originalVelocity.y + deltaT / ( 6.0f * p->getMass() ) * ( k1Force.y + 2.0f*k2Force.y + 2.0f*k3Force.y + k4Force.y ),
+                    originalVelocity.z + deltaT / ( 6.0f * p->getMass() ) * ( k1Force.z + 2.0f*k2Force.z + 2.0f*k3Force.z + k4Force.z )
+                );
 			}
 		}
 	}

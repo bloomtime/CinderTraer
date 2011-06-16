@@ -6,7 +6,7 @@ namespace traer { namespace physics {
 class Integrator 
 {
 public:
-	virtual void step( float t ) = 0;
+	virtual void step( const float &t ) = 0;
 };
 
 } } // namespace traer::physics

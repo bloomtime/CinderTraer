@@ -22,13 +22,13 @@ public:
 	std::vector<Vector3D> k4Forces;
 	std::vector<Vector3D> k4Velocities;
 	
-	ParticleSystem s;
+	ParticleSystem* s;
 	
-	public RungeKuttaIntegrator( ParticleSystem s );
+	RungeKuttaIntegrator( ParticleSystem* s );
 	
 	void allocateParticles();
 	
-	void step( float deltaT );
+	void step( const float &deltaT );
 
 };
 

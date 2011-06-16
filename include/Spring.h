@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "Particle.h"
 #include "Force.h"
 
 namespace traer { namespace physics {
@@ -20,44 +21,45 @@ public:
     float springConstant;
     float damping;
     float restLength;
-    Particle a, b;
+    Particle* a;
+    Particle* b;
     bool on;
     
-    Spring( Particle A, Particle B, float ks, float d, float r );
+    Spring( Particle* A, Particle* B, const float &ks, const float &d, const float &r );
     
     void turnOff();
     
     void turnOn();
     
-    bool isOn();
+    bool isOn() const;
     
-    bool isOff();
+    bool isOff() const;
     
-    Particle getOneEnd();
+    Particle* getOneEnd() const;
     
-    Particle getTheOtherEnd();
+    Particle* getTheOtherEnd() const;
     
-    float currentLength();
+    float currentLength() const;
     
-    float restLength();
+    float getRestLength() const;
     
-    float strength();
+    float getStrength() const;
     
-    void setStrength( float ks );
+    void setStrength( const float &ks );
     
-    float damping();
+    float getDamping() const;
     
-    void setDamping( float d );
+    void setDamping( const float &d );
     
-    void setRestLength( float l );
+    void setRestLength( const float &l );
     
     void apply();
 
 protected:
 
-    void setA( Particle p );
+    void setA( Particle* p );
     
-    void setB( Particle p );
+    void setB( Particle* p );
   
 };
 

@@ -3,27 +3,29 @@
 
 namespace traer { namespace physics {
 
-	EulerIntegrator::EulerIntegrator( ParticleSystem s )
+	EulerIntegrator::EulerIntegrator( ParticleSystem* system )
 	{
-		this.s = s;
+		s = system;
 	}
 	
-	void EulerIntegrator::step( float t )
+	void EulerIntegrator::step( const float &t )
 	{
-		s.clearForces();
-		s.applyForces();
+		s->clearForces();
+		s->applyForces();
 		
-		for ( int i = 0; i < s.numberOfParticles(); i++ )
+		for ( int i = 0; i < s->numberOfParticles(); i++ )
 		{
-			Particle p = (Particle)s.getParticle( i );
-			if ( p.isFree() )
+			Particle* p = s->getParticle( i );
+			if ( p->isFree() )
 			{
-				p.velocity().add( p.force().x()/(p.mass()*t), p.force().y()/(p.mass()*t), p.force().z()/(p.mass()*t) );
-				p.position().add( p.velocity().x()/t, p.velocity().y()/t, p.velocity().z()/t );
+				p->getVelocity()->add( p->getForce()->x/(p->getMass()*t), 
+                                       p->getForce()->y/(p->getMass()*t), 
+                                       p->getForce()->z/(p->getMass()*t) );
+				p->getPosition()->add( p->getVelocity()->x/t, 
+                                       p->getVelocity()->y/t,
+                                       p->getVelocity()->z/t );
 			}
 		}
 	}
-
-}
 
 } } // namespace traer::physics

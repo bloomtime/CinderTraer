@@ -3,18 +3,22 @@
  */
  
 #include "ParticleSystem.h"
+#include "RungeKuttaIntegrator.h"
+#include "ModifiedEulerIntegrator.h"
+#include "Vector3D.h"
  
 namespace traer { namespace physics {
 
-    void ParticleSystem::setIntegrator( int integrator )
+    // FIXME C++: set with a pointer and delete the old one
+    void ParticleSystem::setIntegrator( int id )
     {
-        switch ( integrator )
+        switch ( id )
         {
             case RUNGE_KUTTA:
-                this.integrator = new RungeKuttaIntegrator( this );
+                integrator = new RungeKuttaIntegrator( this );
                 break;
             case MODIFIED_EULER:
-                this.integrator = new ModifiedEulerIntegrator( this );
+                integrator = new ModifiedEulerIntegrator( this );
                 break;
         }
     }
@@ -42,73 +46,74 @@ namespace traer { namespace physics {
     
     void ParticleSystem::tick( float t )
     {  
-        integrator.step( t );
+        integrator->step( t );
     }
     
-    Particle ParticleSystem::makeParticle( float mass, float x, float y, float z )
+    Particle* ParticleSystem::makeParticle( float mass, float x, float y, float z )
     {
-        Particle p = new Particle( mass );
-        p.position().set( x, y, z );
-        particles.add( p );
+        Particle* p = new Particle( mass );
+        p->getPosition()->set( Vector3D(x, y, z) );
+        particles.push_back( p );
         return p;
     }
     
-    Particle ParticleSystem::makeParticle()
+    Particle* ParticleSystem::makeParticle()
     {  
-        return makeParticle( 1.0f, 0f, 0f, 0f );
+        return makeParticle( 1.0f, 0.0f, 0.0f, 0.0f );
     }
     
-    Spring ParticleSystem::makeSpring( Particle a, Particle b, float ks, float d, float r )
+    Spring* ParticleSystem::makeSpring( Particle* a, Particle* b, float ks, float d, float r )
     {
-        Spring s = new Spring( a, b, ks, d, r );
-        springs.add( s );
+        Spring* s = new Spring( a, b, ks, d, r );
+        springs.push_back( s );
         return s;
     }
     
-    Attraction ParticleSystem::makeAttraction( Particle a, Particle b, float k, float minDistance )
+    Attraction* ParticleSystem::makeAttraction( Particle* a, Particle* b, float k, float minDistance )
     {
-        Attraction m = new Attraction( a, b, k, minDistance );
-        attractions.add( m );
+        Attraction* m = new Attraction( a, b, k, minDistance );
+        attractions.push_back( m );
         return m;
     }
     
     void ParticleSystem::clear()
     {
+        // FIXME C++: delete everything, we own it!
         particles.clear();
         springs.clear();
         attractions.clear();
     }
     
-    public ParticleSystem::ParticleSystem( float g, float somedrag )
+    ParticleSystem::ParticleSystem( float g, float somedrag )
     {
         integrator = new RungeKuttaIntegrator( this );
-        particles = new ArrayList();
-        springs = new ArrayList();
-        attractions = new ArrayList();
-        gravity = new Vector3D( 0, g, 0 );
+//        particles = new ArrayList();
+//        springs = new ArrayList();
+//        attractions = new ArrayList();
+        gravity.set( 0, g, 0 );
         drag = somedrag;
         hasDeadParticles = false;
     }
     
-    public ParticleSystem::ParticleSystem( float gx, float gy, float gz, float somedrag )
+    ParticleSystem::ParticleSystem( float gx, float gy, float gz, float somedrag )
     {
         integrator = new RungeKuttaIntegrator( this );
-        particles = new ArrayList();
-        springs = new ArrayList();
-        attractions = new ArrayList();
-        gravity = new Vector3D( gx, gy, gz );
+//        particles = new ArrayList();
+//        springs = new ArrayList();
+//        attractions = new ArrayList();
+        gravity.set( gx, gy, gz );
         drag = somedrag;
         hasDeadParticles = false;
     }
     
-    public ParticleSystem::ParticleSystem()
+    ParticleSystem::ParticleSystem()
     {
         integrator = new RungeKuttaIntegrator( this );
-        particles = new ArrayList();
-        springs = new ArrayList();
-        attractions = new ArrayList();
-        gravity = new Vector3D( 0, ParticleSystem.DEFAULT_GRAVITY, 0 );
-        drag = ParticleSystem.DEFAULT_DRAG;
+//        particles = new ArrayList();
+//        springs = new ArrayList();
+//        attractions = new ArrayList();
+        gravity.set( 0, DEFAULT_GRAVITY, 0 );
+        drag = DEFAULT_DRAG;
         hasDeadParticles = false;
     }
     
@@ -118,43 +123,42 @@ namespace traer { namespace physics {
         {
             for ( int i = 0; i < particles.size(); ++i )
             {
-                Particle p = (Particle)particles.get( i );
-                p.force.add( gravity );
+                Particle* p = particles[i];
+                p->getForce()->add( gravity );
             }
         }
         
         for ( int i = 0; i < particles.size(); ++i )
         {
-            Particle p = (Particle)particles.get( i );
-            p.force.add( p.velocity.x() * -drag, p.velocity.y() * -drag, p.velocity.z() * -drag );
+            Particle* p = particles[i];
+            p->getForce()->add( p->getVelocity()->x * -drag, p->getVelocity()->y * -drag, p->getVelocity()->z * -drag );
         }
         
         for ( int i = 0; i < springs.size(); i++ )
         {
-            Spring f = (Spring)springs.get( i );
-            f.apply();
+            Spring* f = springs[i];
+            f->apply();
         }
         
         for ( int i = 0; i < attractions.size(); i++ )
         {
-            Attraction f = (Attraction)attractions.get( i );
-            f.apply();
+            Attraction* f = attractions[i];
+            f->apply();
         }
         
         for ( int i = 0; i < customForces.size(); i++ )
         {
-            Force f = (Force)customForces.get( i );
-            f.apply();
+            Force* f = customForces[i];
+            f->apply();
         }
     }
     
     void ParticleSystem::clearForces()
     {
-        Iterator i = particles.iterator();
-        while ( i.hasNext() )
+        for ( int i = 0; i < particles.size(); ++i )
         {
-            Particle p = (Particle)i.next();
-            p.force.clear();
+            Particle* p = particles[i];
+            p->getForce()->clear();
         }
     }
     
@@ -173,24 +177,24 @@ namespace traer { namespace physics {
         return attractions.size();
     }
     
-    Particle ParticleSystem::getParticle( int i )
+    Particle* ParticleSystem::getParticle( int i )
     {
-        return (Particle)particles.get( i );
+        return particles[i];
     }
     
-    Spring ParticleSystem::getSpring( int i )
+    Spring* ParticleSystem::getSpring( int i )
     {
-        return (Spring)springs.get( i );
+        return springs[i];
     }
     
-    Attraction ParticleSystem::getAttraction( int i )
+    Attraction* ParticleSystem::getAttraction( int i )
     {
-        return (Attraction)attractions.get( i );
+        return attractions[i];
     }
     
-    void ParticleSystem::addCustomForce( Force f )
+    void ParticleSystem::addCustomForce( Force* f )
     {
-        customForces.add( f );
+        customForces.push_back( f );
     }
     
     int ParticleSystem::numberOfCustomForces()
@@ -198,44 +202,50 @@ namespace traer { namespace physics {
         return customForces.size();
     }
     
-    Force ParticleSystem::getCustomForce( int i )
+    Force* ParticleSystem::getCustomForce( int i )
     {
-        return (Force)customForces.get( i );
+        return customForces[i];
     }
     
-    Force ParticleSystem::removeCustomForce( int i )
+    Force* ParticleSystem::removeCustomForce( int i )
     {
-        return (Force)customForces.remove( i );
+        Force* erased = customForces[i];
+        customForces.erase( customForces.begin() + i );
+        return erased;
     }
     
-    void ParticleSystem::removeParticle( Particle p )
+    void ParticleSystem::removeParticle( Particle* p )
     {
-        particles.remove( p );
+        particles.erase( std::find(particles.begin(), particles.end(), p) );
     }
     
-    Spring ParticleSystem::removeSpring( int i )
+    Spring* ParticleSystem::removeSpring( int i )
     {
-        return (Spring)springs.remove( i );
+        Spring* erased = springs[i];
+        springs.erase( springs.begin() + i );
+        return erased;
     }
     
-    Attraction ParticleSystem::removeAttraction( int i  )
+    Attraction* ParticleSystem::removeAttraction( int i  )
     {
-        return (Attraction)attractions.remove( i );
+        Attraction* erased = attractions[i];
+        attractions.erase( attractions.begin() + i );
+        return erased;
     }
     
-    void ParticleSystem::removeAttraction( Attraction s )
+    void ParticleSystem::removeAttraction( Attraction* s )
     {
-        attractions.remove( s );
+        attractions.erase( std::find(attractions.begin(), attractions.end(), s) );
     }
     
-    void ParticleSystem::removeSpring( Spring a )
+    void ParticleSystem::removeSpring( Spring* a )
     {
-        springs.remove( a );
+        springs.erase( std::find(springs.begin(), springs.end(), a) );
     }
     
-    void ParticleSystem::removeCustomForce( Force f )
+    void ParticleSystem::removeCustomForce( Force* f )
     {
-        customForces.remove( f );
+        customForces.erase( std::find(customForces.begin(), customForces.end(), f) );
     }
 
 } } // namespace traer::physics

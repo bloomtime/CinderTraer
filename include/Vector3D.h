@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 namespace traer { namespace physics {
 
 class Vector3D
@@ -10,47 +12,49 @@ public:
 	float y;
 	float z;
 
-	Vector3D( float X, float Y, float Z );
+	Vector3D( const float &x, const float &y, const float &z );
 	Vector3D();
-	Vector3D( Vector3D p );
+	Vector3D( const Vector3D &p );
 		
-	float z();
-	float y();
-	float x();
+	float getX();
+	float getY();
+	float getZ();
 	
-	void setX( float X );
-	void setY( float Y );
-	void setZ( float Z );
+	void setX( const float &X );
+	void setY( const float &Y );
+	void setZ( const float &Z );
 	
-	void set( float X, float Y, float Z );
+	void set( const float &x, const float &y, const float &z );
 	
-	void set( Vector3D p );
+	void set( const Vector3D &p );
 	
-	void add( Vector3D p );
-	void subtract( Vector3D p );
+	void add( const Vector3D &p );
+	void subtract( const Vector3D &p );
 	  
-	void add( float a, float b, float c );
-	void subtract( float a, float b, float c );
-		  
-	Vector3D multiplyBy( float f );
+	void add( const float &a, const float &b, const float &c );
+	void subtract( const float &a, const float &b, const float &c );
+
+    // FIXME for C++: is there a chainable alternative here?
+//	Vector3D multiplyBy( float f );
+	void multiplyBy( const float &f );
 	
-	float distanceTo( Vector3D p );
+	float distanceTo( const Vector3D &p ) const;
 	
-	float distanceSquaredTo( Vector3D p );
+	float distanceSquaredTo( const Vector3D &p ) const;
 	
-	float distanceTo( float x, float y, float z );
+	float distanceTo( const float &x, const float &y, const float &z ) const;
 	
-	float dot( Vector3D p );
-	float length();
-	float lengthSquared();
+	float dot( const Vector3D &p ) const;
+	float length() const;
+	float lengthSquared() const;
 	  
 	void clear();
 
-	String toString();
+    std::string toString() const;
 
-	Vector3D cross( Vector3D p );
+	Vector3D cross( const Vector3D &p ) const;
 	
-	bool isZero();
+	bool isZero() const;
 
 };
 

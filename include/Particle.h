@@ -10,60 +10,32 @@ public:
   
     bool fixed;
 	
-    Particle( float m );
+    Particle( const float &m );
   
-    /* (non-Javadoc)
-     * @see traer.physics.AbstractParticle#distanceTo(traer.physics.Particle)
-     */
-    float distanceTo( Particle p );
+    float distanceTo( Particle *p ) const;
       
-    /* (non-Javadoc)
-     * @see traer.physics.AbstractParticle#makeFixed()
-     */
     void makeFixed();
       
-    /* (non-Javadoc)
-     * @see traer.physics.AbstractParticle#isFixed()
-     */
-    bool isFixed();
+    bool isFixed() const;
       
-    /* (non-Javadoc)
-     * @see traer.physics.AbstractParticle#isFree()
-     */
-    bool isFree();
-      
-    /* (non-Javadoc)
-     * @see traer.physics.AbstractParticle#makeFree()
-     */
+    bool isFree() const;
+
     void makeFree();
+
+    Vector3D* getPosition();
       
-    /* (non-Javadoc)
-     * @see traer.physics.AbstractParticle#position()
-     */
-    Vector3D position();
+    Vector3D* getVelocity();
       
-    Vector3D velocity();
+    float getMass() const;
       
-    /* (non-Javadoc)
-     * @see traer.physics.AbstractParticle#mass()
-     */
-    float mass();
+    void setMass( const float &m );
       
-    /* (non-Javadoc)
-     * @see traer.physics.AbstractParticle#setMass(float)
-     */
-    void setMass( float m );
+    Vector3D* getForce();
       
-    /* (non-Javadoc)
-     * @see traer.physics.AbstractParticle#force()
-     */
-    Vector3D force();
-      
-    /* (non-Javadoc)
-     * @see traer.physics.AbstractParticle#age()
-     */
-    float age();
-  
+    float getAge() const;
+
+    void setAge(const float &a);
+
 protected:
 
     Vector3D position;

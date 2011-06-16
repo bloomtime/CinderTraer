@@ -1,10 +1,14 @@
 // adapted from http://murderandcreate.com/physics/random_arboretum/
 
+#include <sstream>
 #include "cinder/app/AppCocoaTouch.h"
+#include "cinder/app/TouchEvent.h"
 #include "cinder/app/Renderer.h"
 #include "cinder/Surface.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/Camera.h"
+#include "cinder/Rand.h"
+#include "cinder/CinderMath.h"
 #include "ParticleSystem.h"
 #include "Particle.h"
 #include "Spring.h"
@@ -13,27 +17,27 @@ using namespace ci;
 using namespace ci::app;
 using namespace traer::physics;
 
-#define NODE_SIZE 10;
-#define EDGE_LENGTH 20;
-#define EDGE_STRENGTH 0.2;
-#define SPACER_STRENGTH 1000;
+#define NODE_SIZE 10
+#define EDGE_LENGTH 20
+#define EDGE_STRENGTH 0.2
+#define SPACER_STRENGTH 1000
 
 class RandomArboretumApp : public AppCocoaTouch {
   public:
 	virtual void	setup();
 	virtual void	update();
 	virtual void	draw();
-	virtual void	mouseDown( MouseEvent event );
-	virtual void	mouseDrag( MouseEvent event );
+	virtual void	touchesBegan( TouchEvent event );
+	virtual void	touchesMoved( TouchEvent event );
 
     void drawNetwork();
     void updateCentroid();
-    void addSpacersToNode( Particle p, Particle r );
-    void makeEdgeBetween( Particle a, Particle b );
+    void addSpacersToNode( Particle *p, Particle *r );
+    void makeEdgeBetween( Particle *a, Particle *b );
     void initialize();
     void addNode();    
 
-    ParticleSystem physics;
+    ParticleSystem* physics;
     float scale;
     float centroidX;
     float centroidY;
@@ -69,20 +73,22 @@ void RandomArboretumApp::setup()
     initialize();    
 }
 
-void RandomArboretumApp::mouseDown( MouseEvent event )
+void RandomArboretumApp::touchesBegan( TouchEvent event )
 {
+    console() << "touchesBegan" << std::endl;
     addNode();
 }
 
-void RandomArboretumApp::mouseDrag( MouseEvent event )
+void RandomArboretumApp::touchesMoved( TouchEvent event )
 {
+    console() << "touchesMoved" << std::endl;
     addNode();
 }
 
 void RandomArboretumApp::update()
 {
-    physics.tick(); 
-    if ( physics.numberOfParticles() > 1 ) {
+    physics->tick(); 
+    if ( physics->numberOfParticles() > 1 ) {
         updateCentroid();
     }
 }
@@ -92,16 +98,15 @@ void RandomArboretumApp::draw()
     gl::clear( Color( 1.0f, 1.0f, 1.0f ) );
     gl::setMatricesWindow( getWindowSize() );        
     
-    gl::drawString( "" + physics.numberOfParticles() + " PARTICLES\n" + (int)getFrameRate() + " FPS",
-                    Vec2f(10, 20), ColorA( 0, 0, 0, 0 ) );
+    //std::stringstream ss;
+    console() << physics->numberOfParticles() << " PARTICLES " << getFrameRate() << " FPS" << std::endl;
+    //gl::drawString( ss.str(), Vec2f(10, 20), Color( 0, 0, 0 ) );
 
     gl::pushModelView();
     gl::translate( getWindowCenter() );
-    gl::scale( Vec2f( scale, scale ) );
+    gl::scale( Vec3f( scale, scale, 1.0f ) );
     gl::translate( Vec2f(-centroidX, -centroidY) );
-    
     drawNetwork(); 
-
     gl::popModelView();
 }
 
@@ -111,44 +116,39 @@ void RandomArboretumApp::draw()
 void RandomArboretumApp::drawNetwork()
 {      
     // draw vertices
-    fill( 160 );
-    noStroke();
-    for ( int i = 0; i < physics.numberOfParticles(); ++i )
+    gl::color(Color(0.63f, 0.63f, 0.63f));
+    for ( int i = 0; i < physics->numberOfParticles(); ++i )
     {
-        Particle v = physics.getParticle( i );
-        ellipse( v.position().x(), v.position().y(), NODE_SIZE, NODE_SIZE );
+        Particle* v = physics->getParticle( i );
+        gl::drawSolidCircle( Vec2f(v->getPosition()->x, v->getPosition()->y), NODE_SIZE/2.0f );
     }
     
     // draw edges 
-    stroke( 0 );
-    beginShape( LINES );
-    for ( int i = 0; i < physics.numberOfSprings(); ++i )
+    gl::color(Color::black());
+    for ( int i = 0; i < physics->numberOfSprings(); ++i )
     {
-        Spring e = physics.getSpring( i );
-        Particle a = e.getOneEnd();
-        Particle b = e.getTheOtherEnd();
-        vertex( a.position().x(), a.position().y() );
-        vertex( b.position().x(), b.position().y() );
+        Spring* e = physics->getSpring( i );
+        Particle* a = e->getOneEnd();
+        Particle* b = e->getTheOtherEnd();
+        gl::drawLine( Vec2f(a->getPosition()->x, a->getPosition()->y), Vec2f(b->getPosition()->x, b->getPosition()->y) );                 
     }
-    endShape();
 }
 
 
 void RandomArboretumApp::updateCentroid()
 {
-    float 
-    xMax = Float.NEGATIVE_INFINITY, 
-    xMin = Float.POSITIVE_INFINITY, 
-    yMin = Float.POSITIVE_INFINITY, 
-    yMax = Float.NEGATIVE_INFINITY;
+    float xMax = -FLT_MAX, 
+          xMin = FLT_MAX, 
+          yMin = FLT_MAX, 
+          yMax = -FLT_MAX;
     
-    for ( int i = 0; i < physics.numberOfParticles(); ++i )
+    for ( int i = 0; i < physics->numberOfParticles(); ++i )
     {
-        Particle p = physics.getParticle( i );
-        xMax = max( xMax, p.position().x() );
-        xMin = min( xMin, p.position().x() );
-        yMin = min( yMin, p.position().y() );
-        yMax = max( yMax, p.position().y() );
+        Particle* p = physics->getParticle( i );
+        xMax = math<float>::max( xMax, p->getPosition()->x );
+        xMin = math<float>::min( xMin, p->getPosition()->x );
+        yMin = math<float>::min( yMin, p->getPosition()->y );
+        yMax = math<float>::max( yMax, p->getPosition()->y );
     }
     float deltaX = xMax-xMin;
     float deltaY = yMax-yMin;
@@ -162,36 +162,37 @@ void RandomArboretumApp::updateCentroid()
         scale = getWindowWidth()/(deltaX+50);
 }
 
-void RandomArboretumApp::addSpacersToNode( Particle p, Particle r )
+void RandomArboretumApp::addSpacersToNode( Particle* p, Particle* r )
 {
-    for ( int i = 0; i < physics.numberOfParticles(); ++i )
+    for ( int i = 0; i < physics->numberOfParticles(); ++i )
     {
-        Particle q = physics.getParticle( i );
+        Particle* q = physics->getParticle( i );
         if ( p != q && p != r )
-            physics.makeAttraction( p, q, -SPACER_STRENGTH, 20 );
+            physics->makeAttraction( p, q, -SPACER_STRENGTH, 20 );
     }
 }
 
-void RandomArboretumApp::makeEdgeBetween( Particle a, Particle b )
+void RandomArboretumApp::makeEdgeBetween( Particle* a, Particle* b )
 {
-    physics.makeSpring( a, b, EDGE_STRENGTH, EDGE_STRENGTH, EDGE_LENGTH );
+    physics->makeSpring( a, b, EDGE_STRENGTH, EDGE_STRENGTH, EDGE_LENGTH );
 }
 
 void RandomArboretumApp::initialize()
 {
-    physics.clear();
-    physics.makeParticle();
+    physics->clear();
+    physics->makeParticle();
 }
 
 void RandomArboretumApp::addNode()
 { 
-    Particle p = physics.makeParticle();
-    Particle q = physics.getParticle( (int)random( 0, physics.numberOfParticles()-1) );
+    Particle* p = physics->makeParticle();
+    Particle* q = physics->getParticle( Rand::randInt(0, physics->numberOfParticles() - 1) );
     while ( q == p )
-        q = physics.getParticle( (int)random( 0, physics.numberOfParticles()-1) );
+        q = physics->getParticle( Rand::randInt(0, physics->numberOfParticles() - 1) );
     addSpacersToNode( p, q );
     makeEdgeBetween( p, q );
-    p.position().set( q.position().x() + random( -1, 1 ), q.position().y() + random( -1, 1 ), 0 );
+    Vec2f jiggle = Rand::randVec2f();
+    p->getPosition()->set( q->getPosition()->x + jiggle.x, q->getPosition()->y + jiggle.y, 0 );
 }
 
 CINDER_APP_COCOA_TOUCH( RandomArboretumApp, RendererGl )

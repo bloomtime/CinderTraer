@@ -3,20 +3,20 @@
 
 namespace traer { namespace physics {
 
-    Particle::Particle( float m )
+    Particle::Particle( const float &m )
     {
-        position = new Vector3D();
-        velocity = new Vector3D();
-        force = new Vector3D();
+//        position = new Vector3D();
+//        velocity = new Vector3D();
+//        force = new Vector3D();
         mass = m;
         fixed = false;
         age = 0;
         dead = false;
     }
   
-    float Particle::distanceTo( Particle p )
+    float Particle::distanceTo( Particle *p ) const
     {
-        return this.position().distanceTo( p.position() );
+        return position.distanceTo( *(p->getPosition()) );
     }
   
     void Particle::makeFixed()
@@ -25,12 +25,12 @@ namespace traer { namespace physics {
 	    velocity.clear();
     }
   
-    bool Particle::isFixed()
+    bool Particle::isFixed() const
     {
 	  return fixed;
     }
   
-    bool Particle::isFree()
+    bool Particle::isFree() const
     {
         return !fixed;
     }
@@ -40,36 +40,41 @@ namespace traer { namespace physics {
         fixed = false;
     }
   
-    Vector3D Particle::position()
+    Vector3D* Particle::getPosition()
     {
-        return position;
+        return &position;
     }
   
-    Vector3D Particle::velocity()
+    Vector3D* Particle::getVelocity()
     {
-        return velocity;
+        return &velocity;
     }
   
-    float Particle::mass()
+    float Particle::getMass() const
     {
         return mass;
     }
   
-    void Particle::setMass( float m )
+    void Particle::setMass( const float &m )
     {
         mass = m;
     }
   
-    Vector3D Particle::force()
+    Vector3D* Particle::getForce()
     {
-        return force;
+        return &force;
     }
   
-    float Particle::age()
+    float Particle::getAge() const
     {
         return age;
     }
-  
+
+    void Particle::setAge(const float &a)
+    {
+        age = a;
+    }
+
     void Particle::reset()
     {
         age = 0;
@@ -77,7 +82,7 @@ namespace traer { namespace physics {
         position.clear();
         velocity.clear();
         force.clear();
-        mass = 1f;
+        mass = 1.0f;
     }
 
 } } // namespace traer::physics

@@ -2,6 +2,7 @@
  * May 29, 2005
  */
 
+#include <cmath>
 #include "Spring.h"
 
 namespace traer { namespace physics {
@@ -11,7 +12,7 @@ namespace traer { namespace physics {
     *
     */
     
-    Spring::Spring( Particle A, Particle B, float ks, float d, float r )
+    Spring::Spring( Particle* A, Particle* B, const float &ks, const float &d, const float &r )
     {
         springConstant = ks;
         damping = d;
@@ -31,70 +32,70 @@ namespace traer { namespace physics {
         on = true;
     }
     
-    bool Spring::isOn()
+    bool Spring::isOn() const
     {
         return on;
     }
     
-    bool Spring::isOff()
+    bool Spring::isOff() const
     {
         return !on;
     }
     
-    Particle Spring::getOneEnd()
+    Particle* Spring::getOneEnd() const
     {
         return a;
     }
     
-    Particle Spring::getTheOtherEnd()
+    Particle* Spring::getTheOtherEnd() const
     {
         return b;
     }
     
-    float Spring::currentLength()
+    float Spring::currentLength() const
     {
-        return a.position().distanceTo( b.position() );
+        return a->getPosition()->distanceTo( *(b->getPosition()) );
     }
     
-    float Spring::restLength()
+    float Spring::getRestLength() const
     {
         return restLength;
     }
     
-    float Spring::strength()
+    float Spring::getStrength() const
     {
         return springConstant;
     }
     
-    void Spring::setStrength( float ks )
+    void Spring::setStrength( const float &ks )
     {
         springConstant = ks;
     }
     
-    float Spring::damping()
+    float Spring::getDamping() const
     {
         return damping;
     }
     
-    void Spring::setDamping( float d )
+    void Spring::setDamping( const float &d )
     {
         damping = d;
     }
     
-    void Spring::setRestLength( float l )
+    void Spring::setRestLength( const float &l )
     {
         restLength = l;
     }
     
     void Spring::apply()
     {	
-        if ( on && ( a.isFree() || b.isFree() ) )
+        if ( on && ( a->isFree() || b->isFree() ) )
         {
-            float a2bX = a.position().x - b.position().x;
-            float a2bY = a.position().y - b.position().y;
-            float a2bZ = a.position().z - b.position().z;
+            float a2bX = a->getPosition()->x - b->getPosition()->x;
+            float a2bY = a->getPosition()->y - b->getPosition()->y;
+            float a2bZ = a->getPosition()->z - b->getPosition()->z;
             
-            float a2bDistance = (float)Math.sqrt( a2bX*a2bX + a2bY*a2bY + a2bZ*a2bZ );
+            float a2bDistance = sqrt( a2bX*a2bX + a2bY*a2bY + a2bZ*a2bZ );
             
             if ( a2bDistance == 0 )
             {
@@ -117,9 +118,9 @@ namespace traer { namespace physics {
             
             // want velocity along line b/w a & b, damping force is proportional to this
             
-            float Va2bX = a.velocity().x - b.velocity().x;
-            float Va2bY = a.velocity().y - b.velocity().y;
-            float Va2bZ = a.velocity().z - b.velocity().z;
+            float Va2bX = a->getVelocity()->x - b->getVelocity()->x;
+            float Va2bY = a->getVelocity()->y - b->getVelocity()->y;
+            float Va2bZ = a->getVelocity()->z - b->getVelocity()->z;
                                 
             float dampingForce = -damping * ( a2bX*Va2bX + a2bY*Va2bY + a2bZ*Va2bZ );
             
@@ -132,19 +133,19 @@ namespace traer { namespace physics {
             a2bY *= r;
             a2bZ *= r;
             
-            if ( a.isFree() )
-                a.force().add( a2bX, a2bY, a2bZ );
-            if ( b.isFree() )
-                b.force().add( -a2bX, -a2bY, -a2bZ );
+            if ( a->isFree() )
+                a->getForce()->add( a2bX, a2bY, a2bZ );
+            if ( b->isFree() )
+                b->getForce()->add( -a2bX, -a2bY, -a2bZ );
         }
     }
     
-    void Spring::setA( Particle p )
+    void Spring::setA( Particle* p )
     {
         a = p;
     }
     
-    void Spring::setB( Particle p )
+    void Spring::setB( Particle* p )
     {
         b = p;
     }

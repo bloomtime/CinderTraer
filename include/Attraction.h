@@ -11,14 +11,14 @@ class Attraction : public Force
 {
 public:
 
-	Particle a;
-	Particle b;
+	Particle* a;
+	Particle* b;
 	float k;
 	bool on;
 	float distanceMin;
 	float distanceMinSquared;
 	
-	Attraction( Particle a, Particle b, float k, float distanceMin );
+	Attraction( Particle* a, Particle* b, float k, float distanceMin );
 
 	float getMinimumDistance();
 
@@ -30,23 +30,23 @@ public:
 
 	void setStrength( float k );
 
-	Particle getOneEnd();
+	Particle* getOneEnd();
 
-	Particle getTheOtherEnd();
+	Particle* getTheOtherEnd();
 
 	void apply();
 
 	float getStrength();
 
-	bool isOn();
+	bool isOn() const;
 	
-	bool isOff();
+	bool isOff() const;
 
 protected:
 	
-	void setA( Particle p );
+	void setA( Particle* p );
 	
-	void setB( Particle p );
+	void setB( Particle* p );
 	
 };
 

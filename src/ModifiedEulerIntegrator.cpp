@@ -2,30 +2,30 @@
 
 namespace traer { namespace physics {
 
-	ModifiedEulerIntegrator::ModifiedEulerIntegrator( ParticleSystem s )
+	ModifiedEulerIntegrator::ModifiedEulerIntegrator( ParticleSystem *system )
 	{
-		this.s = s;
+		s = system;
 	}
 	
-	void ModifiedEulerIntegrator::step( float t )
+	void ModifiedEulerIntegrator::step( const float &t )
 	{
-		s.clearForces();
-		s.applyForces();
+		s->clearForces();
+		s->applyForces();
 		
 		float halftt = 0.5f*t*t;
 		
-		for ( int i = 0; i < s.numberOfParticles(); i++ )
+		for ( int i = 0; i < s->numberOfParticles(); i++ )
 		{
-			Particle p = s.getParticle( i );
-			if ( p.isFree() )
+			Particle* p = s->getParticle( i );
+			if ( p->isFree() )
 			{
-				float ax = p.force().x()/p.mass();
-				float ay = p.force().y()/p.mass();
-				float az = p.force().z()/p.mass();
+				float ax = p->getForce()->x/p->getMass();
+				float ay = p->getForce()->y/p->getMass();
+				float az = p->getForce()->z/p->getMass();
 				
-				p.position().add( p.velocity().x()/t, p.velocity().y()/t, p.velocity().z()/t );
-				p.position().add( ax*halftt, ay*halftt, az*halftt );
-				p.velocity().add( ax/t, ay/t, az/t );
+				p->getPosition()->add( p->getVelocity()->x/t, p->getVelocity()->y/t, p->getVelocity()->z/t );
+				p->getPosition()->add( ax*halftt, ay*halftt, az*halftt );
+				p->getVelocity()->add( ax/t, ay/t, az/t );
 			}
 		}
 	}
