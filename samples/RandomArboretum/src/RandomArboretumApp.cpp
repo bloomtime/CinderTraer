@@ -67,7 +67,7 @@ void RandomArboretumApp::setup()
     
     // Try this to see how Euler is faster, but borderline unstable.
     // 500 particles = 24 fps on my machine
-    // physics->setIntegrator( new ModifiedEulerIntegrator(physics) ); 
+//    physics->setIntegrator( new ModifiedEulerIntegrator(physics) ); 
     
     // Now try this to see make it more damped, but stable.
     //physics.setDrag( 0.2 );
@@ -95,7 +95,7 @@ void RandomArboretumApp::touchesMoved( TouchEvent event )
 
 void RandomArboretumApp::update()
 {
-    physics->tick(1.0f); 
+    physics->tick(); 
     if ( physics->numberOfParticles() > 1 ) {
         updateCentroid();
     }
@@ -168,10 +168,10 @@ void RandomArboretumApp::updateCentroid()
     centroidX = xMin + 0.5*deltaX;
     centroidY = yMin + 0.5*deltaY;
     
-    if ( deltaY > deltaX )
-        scale = getWindowHeight()/(deltaY+50);
-    else
-        scale = getWindowWidth()/(deltaX+50);
+    float scaleY = getWindowHeight()/(deltaY+50);
+    float scaleX = getWindowWidth()/(deltaX+50);
+    
+    scale = math<float>::min(scaleX, scaleY);
 }
 
 void RandomArboretumApp::addSpacersToNode( Particle* p, Particle* r )
