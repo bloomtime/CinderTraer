@@ -1,9 +1,15 @@
 A C++ port of the venerable Traer Physics library.
 
-Licensed under the same "do whatever you want just email Jeff" license as the Java/Processing version.
+Licensed under the same "do whatever you want just email Jeff" license as the
+Java/Processing version.
 
 See http://murderandcreate.com/physics/ for the original Java code and examples.
 
-See also https://github.com/memo/msalibs - MSAPhysics by Memo Atken is a simple Cinder-compatible C++ physics library, more mature and stable than this port and with more features.
+See also https://github.com/memo/msalibs - MSAPhysics by Memo Atken is a simple
+Cinder-compatible C++ physics library, more mature and stable than this port and
+with more features.
 
-Contributions welcome! Please attempt to port the other original Java demos and let us know if you run into serious incompatibilities. Most things should have the same name, but Vector3D has been replaced with Cinder's Vec3f where possible and most variables that were accessed with functions are now plain properties.
+Contributions welcome! Please attempt to port the other original Java demos and
+let us know if you run into serious incompatibilities. Most things should have
+the same name, but Vector3D has been replaced with Cinder's Vec3f where possible
+and most variables that were accessed with functions are now plain properties.
